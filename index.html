@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>مفاجأة إيناس — مليانة حب 🎉</title>
+<style>
+  /* ----------------- صفحة مفاجأة ديناميكية ----------------- */
+  :root{
+    --bg1:#071022; --accent1:#ff6fb5; --accent2:#ffd56b; --muted:rgba(255,255,255,0.75);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Tajawal",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background:linear-gradient(180deg,#051021 0%,#071028 50%,#0b1220 100%);
+    color:#fff;padding:18px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto}
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:18px;padding:20px;border:1px solid rgba(255,255,255,0.04);
+    box-shadow:0 30px 80px rgba(0,0,0,0.6); position:relative; overflow:hidden;
+  }
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:60px;height:60px;border-radius:12px;background:linear-gradient(90deg,var(--accent1),#ff9acb);display:flex;align-items:center;justify-content:center;color:#2b0b2b;font-weight:900}
+  h1{font-size:18px}
+  p.small{color:var(--muted);font-size:13px}
+
+  /* STAGES */
+  .stage-wrap{display:flex;flex-direction:column;gap:16px}
+  .stage{display:none;flex-direction:column;align-items:center;gap:12px;padding:18px;text-align:center}
+  .stage.active{display:flex;animation:stageIn .6s cubic-bezier(.2,.9,.2,1) both}
+  @keyframes stageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  img.qphoto{width:220px;height:220px;border-radius:18px;object-fit:cover;border:6px solid rgba(255,255,255,0.06);box-shadow:0 18px 50px rgba(0,0,0,0.5)}
+  .question{font-weight:900;color:#ffdce6;font-size:clamp(18px,3vmin,26px)}
+  .controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+  .btn{padding:10px 18px;border-radius:999px;border:none;cursor:pointer;font-weight:800;background:linear-gradient(90deg,var(--accent1),#ff9acb);color:#fff;box-shadow:0 12px 30px rgba(255,111,181,0.12)}
+  .btn.alt{background:linear-gradient(90deg,#6be6ff,#65e6cc);color:#053}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+  .hint{font-size:13px;color:var(--muted)}
+
+  /* final overlay */
+  .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s}
+  .overlay.show{opacity:1;visibility:visible;pointer-events:auto}
+  .overlay-card{width:min(920px,94vw);padding:22px;border-radius:16px;background:linear-gradient(180deg,rgba(0,0,0,0.6),rgba(0,0,0,0.35));text-align:center;border:1px solid rgba(255,255,255,0.06)}
+  .final-title{font-size:clamp(28px,6vmin,46px);font-weight:900;background:linear-gradient(90deg,#fff 0%,#ffe3f3 20%,#ffd56b 50%);-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 3s linear infinite}
+  @keyframes shine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .final-sub{color:var(--muted);margin-top:8px}
+
+  /* container for dynamic surprises (flowers/hearts/confetti) */
+  #surprises{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:6000;overflow:hidden}
+
+  .surprise-item{
+    position:absolute;will-change:transform,opacity;pointer-events:none;
+    transform-origin:center center;opacity:0;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.35));
+  }
+
+  /* small helper utilities */
+  .center{display:flex;align-items:center;justify-content:center}
+  .muted{color:var(--muted)}
+
+  /* responsive */
+  @media (max-width:720px){
+    img.qphoto{width:160px;height:160px}
+    .final-title{font-size:28px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+
+      <header>
+        <div class="brand">
+          <div class="logo">E💗</div>
+          <div>
+            <h1>Surprise — Einas</h1>
+            <p class="small">اضغطي نعم لو انتي إيناس — الهدية تنتظرك 🎁</p>
+          </div>
+        </div>
+        <div class="center">
+          <div class="muted">مفاجآت، ورود، قلوب، كونفيتي — استمتعي</div>
+        </div>
+      </header>
+
+      <div class="stage-wrap" id="stages">
+        <!-- stage 1 -->
+        <section class="stage active" data-stage="1" id="stage1">
+          <img src="q1.jpg" alt="q1" class="qphoto" id="qphoto1" onerror="this.style.display='none'">
+          <div class="question">انتِ إيناس؟</div>
+          <div class="controls">
+            <button class="btn" id="yes1">نعم إيناس</button>
+            <button class="btn alt" id="no1">لا لست انا</button>
+          </div>
+          <div class="hint">اضغطي نعم لو انتي إيناس — الهدية تنتظرك ✨</div>
+        </section>
+
+        <!-- stage 2 -->
+        <section class="stage" data-stage="2" id="stage2">
+          <img src="q2.jpg" alt="q2" class="qphoto" id="qphoto2" onerror="this.style.display='none'">
+          <div class="question">عندي مفاجأة صغيرة لكِ 🙈</div>
+          <div class="controls">
+            <button class="btn" id="ok2">يب يب وش هي</button>
+            <button class="btn ghost" id="skip2">لا الآن</button>
+          </div>
+          <div class="hint">اضغطي "يب يب وش هي" لو تحبين المفاجأة</div>
+        </section>
+
+        <!-- stage 3 -->
+        <section class="stage" data-stage="3" id="stage3">
+          <img src="q3.jpg" alt="q3" class="qphoto" id="qphoto3" onerror="this.style.display='none'">
+          <div class="question">مستعدة؟</div>
+          <div class="controls">
+            <button class="btn" id="ready3">مستعدة</button>
+            <button class="btn alt" id="later3">انتظر شوي</button>
+          </div>
+          <div class="hint">اضغطي "مستعدة" لو انتي جاهزة للمفاجأة الكبرى</div>
+        </section>
+
+        <!-- stage 4 -->
+        <section class="stage" data-stage="4" id="stage4">
+          <img src="q4.jpg" alt="q4" class="qphoto" id="qphoto4" onerror="this.style.display='none'">
+          <div class="question">حسناً — جهزي قلبك 💗</div>
+          <div class="controls">
+            <button class="btn" id="finalBtn">يب يب 🙈</button>
+          </div>
+          <div class="hint">اضغطي لفتح الهدية النهائية</div>
+        </section>
+
+      </div> <!-- end stages -->
+
+      <div style="margin-top:12px;text-align:center" class="muted">يمكنك استبدال الصور q1.jpg, q2.jpg, q3.jpg, q4.jpg, final.jpg في نفس المجلد</div>
+    </div>
+  </div>
+
+  <!-- container for generated surprise elements -->
+  <div id="surprises" aria-hidden="true"></div>
+
+  <!-- final overlay -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-card">
+      <div class="final-title" id="finalTitle">كل سنة و انت اغلى واجمل انسان مر فحياتي</div>
+      <div class="final-sub">صورة هنا — استبدلي final.jpg بنفس المجلد لعرض صورتك</div>
+      <img src="final.jpg" alt="final" id="finalImage" style="width:300px;height:300px;border-radius:16px;object-fit:cover;margin-top:16px;border:8px solid rgba(255,255,255,0.06)" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+<script>
+/* ======== Utility helpers ======== */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+function rand(min,max){ return Math.random()*(max-min)+min; }
+function rint(min,max){ return Math.floor(rand(min,max+1)); }
+
+/* ======== Stage navigation ======== */
+const stages = $$('.stage');
+let current = 0;
+function showStage(i){
+  stages.forEach((s,idx)=> s.classList.toggle('active', idx===i));
+  current = i;
+}
+showStage(0);
+
+/* ======== Buttons ======== */
+$('#yes1').addEventListener('click', ()=> {
+  showStage(1);
+  tinyCelebrate();
+});
+$('#no1').addEventListener('click', ()=> {
+  // show simple message and return to top or leave
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:inherit"><div style="text-align:center;color:#fff"><h2>ما في شي هنا — آسف 😅</h2><p class="muted">هذه المفاجأة مخصصة لإيناس فقط.</p></div></div>';
+});
+$('#ok2').addEventListener('click', ()=> { showStage(2); tinyCelebrate(); });
+$('#skip2').addEventListener('click', ()=> { showStage(2); });
+$('#ready3').addEventListener('click', ()=> { showStage(3); tinyCelebrate(); });
+$('#later3').addEventListener('click', ()=> { setTimeout(()=> showStage(3), 500); });
+$('#finalBtn').addEventListener('click', ()=> revealFinal() );
+
+/* ======== Small celebratory functions ======== */
+function tinyCelebrate(){
+  spawnHearts( window.innerWidth/2, window.innerHeight/2, 12 );
+  spawnConfetti(window.innerWidth/2, window.innerHeight/2 - 60, 36);
+}
+
+/* ======== Surprises system ======== */
+const surprises = $('#surprises');
+
+// spawn heart elements
+function spawnHearts(cx,cy,count=12){
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className='surprise-item';
+    el.style.left = (cx + rand(-150,150)) + 'px';
+    el.style.top = (cy + rand(-120,120)) + 'px';
+    el.style.fontSize = (12 + rand(8,26)) + 'px';
+    el.style.opacity = 1;
+    el.innerText = ['💗','💖','💕'][rint(0,2)];
+    // animate
+    surprises.appendChild(el);
+    animateFloat(el, rand(1200,2800), rand(-200,200), -rand(160,260), rand(-360,360), 1 + rand(0,0.6));
+    setTimeout(()=> el.remove(), 3000 + rand(0,1200));
+  }
+}
+
+// spawn confetti bits (canvas-based)
+let confettiParticles = [];
+const confCanvas = document.createElement('canvas');
+confCanvas.id = 'confCanvas';
+confCanvas.style.position = 'fixed';
+confCanvas.style.left = '0';
+confCanvas.style.top = '0';
+confCanvas.style.width = '100%';
+confCanvas.style.height = '100%';
+confCanvas.style.pointerEvents = 'none';
+confCanvas.width = innerWidth;
+confCanvas.height = innerHeight;
+document.body.appendChild(confCanvas);
+const cctx = confCanvas.getContext('2d');
+window.addEventListener('resize', ()=> { confCanvas.width = innerWidth; confCanvas.height = innerHeight; });
+
+function spawnConfetti(x,y,amt=120){
+  const colors = ['#ff6fb5','#ffd56b','#7be6ff','#65e6cc','#ff9acb','#ffd2e9'];
+  for(let i=0;i<amt;i++){
+    confettiParticles.push({
+      x: x + rand(-100,100),
+      y: y + rand(-40,40),
+      vx: rand(-6,6),
+      vy: rand(-10,-3),
+      r: rand(4,12),
+      rot: rand(0,360),
+      vr: rand(-10,10),
+      c: colors[rint(0,colors.length-1)],
+      life: 90 + rint(0,120)
+    });
+  }
+}
+
+// animate confetti
+function confettiLoop(){
+  cctx.clearRect(0,0,confCanvas.width,confCanvas.height);
+  for(let i=confettiParticles.length-1;i>=0;i--){
+    const p = confettiParticles[i];
+    p.vy += 0.3;
+    p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+    cctx.save();
+    cctx.translate(p.x,p.y);
+    cctx.rotate(p.rot*Math.PI/180);
+    cctx.fillStyle = p.c;
+    cctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*0.6);
+    cctx.restore();
+    p.life--;
+    if(p.life <= 0 || p.y > confCanvas.height + 80) confettiParticles.splice(i,1);
+  }
+  requestAnimationFrame(confettiLoop);
+}
+confettiLoop();
+
+/* float animate helper */
+function animateFloat(el, duration=1800, dx=0, dy=-200, drot=0, scale=1){
+  el.animate([
+    { transform: `translate(0px,0px) rotate(0deg) scale(${1})`, opacity:1 },
+    { transform: `translate(${dx}px, ${dy/2}px) rotate(${drot/2}deg) scale(${1+ (scale-1)/2})`, opacity:0.9 },
+    { transform: `translate(${dx}px, ${dy}px) rotate(${drot}deg) scale(${scale})`, opacity:0 }
+  ], { duration: duration + Math.random()*600, easing: 'cubic-bezier(.2,.9,.2,1)', iterations:1, fill:'forwards' });
+}
+
+/* spawn many flower/heart/confetti elements - the "2000 surprises" generator */
+async function spawnMassSurprises(total=2000){
+  // we'll batch-create to avoid freezing: create in small chunks
+  const batch = 80; // number per batch
+  let created = 0;
+  while(created < total){
+    const toCreate = Math.min(batch, total - created);
+    for(let i=0;i<toCreate;i++){
+      const x = rand(60, window.innerWidth - 60);
+      const y = rand(60, window.innerHeight - 60);
+      // random choice of surprise type
+      const t = Math.random();
+      if(t < 0.45){
+        // hearts
+        spawnHearts(x,y,1);
+      } else if(t < 0.85){
+        // flower dom burst small
+        const el = document.createElement('div');
+        el.className = 'surprise-item';
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        const size = rint(14,44);
+        el.style.width = size + 'px';
+        el.style.height = size + 'px';
+        el.style.opacity = 1;
+        const colors = ['#ff9acb','#ffd56b','#7be6ff','#65e6cc'];
+        const col = colors[rint(0, colors.length-1)];
+        el.innerHTML = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg"><path fill="${col}" d="M12 2c1.1 0 2 .9 2 2 0 1.9-2 4-2 4s-2-2.1-2-4c0-1.1.9-2 2-2zm6 4c1.1 0 2 .9 2 2 0 1.9-2 4-2 4s-2-2.1-2-4c0-1.1.9-2 2-2zM6 6c1.1 0 2 .9 2 2 0 1.9-2 4-2 4s-2-2.1-2-4c0-1.1.9-2 2-2zM18 14c1.1 0 2 .9 2 2 0 1.9-2 4-2 4s-2-2.1-2-4c0-1.1.9-2 2-2zM6 14c1.1 0 2 .9 2 2 0 1.9-2 4-2 4s-2-2.1-2-4c0-1.1.9-2 2-2z"/></svg>`;
+        surprises.appendChild(el);
+        animateFloat(el, 1200 + rand(0,1600), rand(-140,140), -rand(120,360), rand(-360,360), 1 + rand(0,0.5));
+        setTimeout(()=> el.remove(), 2600 + Math.random()*1600);
+      } else {
+        // confetti burst
+        spawnConfetti(x,y, rint(8,22) );
+      }
+    }
+    created += toCreate;
+    // small yield to keep UI responsive
+    await new Promise(r => setTimeout(r, 60));
+  }
+}
+
+/* ======== Final reveal logic ======== */
+function revealFinal(){
+  // fold card a bit
+  $('#card').style.transformOrigin = 'center';
+  $('#card').style.transition = 'transform .6s ease, opacity .6s ease';
+  $('#card').style.transform = 'translateY(-10px) scale(.98)';
+  $('#card').style.opacity = '0.95';
+  setTimeout(()=>{
+    $('#overlay').classList.add('show');
+    $('#overlay').setAttribute('aria-hidden','false');
+    // massive celebration
+    spawnConfetti(window.innerWidth/2, window.innerHeight/2 - 60, 250);
+    // spawn 2000 surprises (in batches) - this is the key fulfilled request
+    spawnMassSurprises(2000);
+  }, 500);
+}
+
+/* ======== small accessibility: Enter progress ======== */
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){
+    if(current < stages.length - 1) showStage(current + 1);
+  }
+});
+
+/* ======== friendly tip: clicking final image copies message ======== */
+$('#finalImage').addEventListener('click', ()=>{
+  const text = $('#finalTitle').innerText;
+  try{ navigator.clipboard.writeText(text); alert('تم نسخ العبارة! يمكنك لصقها في رسالة 🎉'); }catch(e){}
+});
+
+/* End of script */
+</script>
+</body>
+</html>
